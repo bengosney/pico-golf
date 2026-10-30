@@ -1,0 +1,4 @@
+[lint]
+# PicoSystem's API is global on the device. ty checks these names against
+# __builtins__.pyi, which ruff can't read.
+ignore = ["F821"]
