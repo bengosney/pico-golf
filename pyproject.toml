@@ -1,4 +1,8 @@
-[lint]
+[project]
+name = "pico-golf"
+version = "0.1.0"
+
+[tool.ruff.lint]
 # PicoSystem's API is global on the device. ty checks these names against
 # __builtins__.pyi, which ruff can't read.
 ignore = ["F821"]
