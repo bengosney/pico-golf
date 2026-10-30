@@ -1,5 +1,5 @@
 output = "tileset"
-size = 16
+size = 8
 scale = 10
 seed = 1
 noise-scale = 1.0
