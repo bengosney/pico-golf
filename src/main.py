@@ -8,7 +8,7 @@ CELLS = SPRITE_SIZE // 8  # sprite() counts in 8x8 cells
 COLUMNS = SCREEN_SIZE // SPRITE_SIZE
 
 HILL_WIDTH = 0.25  # smaller makes broader hills
-HILL_HEIGHT = 20
+HILL_HEIGHT = 25
 
 
 def circle_height(column):
@@ -44,11 +44,10 @@ def draw(tick):
     for column, height in enumerate(heights):
         frect(column * SPRITE_SIZE, height, SPRITE_SIZE, SCREEN_SIZE - height)
 
-    sprite(0, 0, 0)
-
-    text(str(heights[0]), 20, 0)
-
     for column, height in enumerate(heights):
         tile(1, column * SPRITE_SIZE, height)
+        x = column * SPRITE_SIZE
+        for y in range(height + SPRITE_SIZE, SCREEN_SIZE, SPRITE_SIZE):
+            tile(0, x, y)
 
 start()
