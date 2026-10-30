@@ -2,14 +2,16 @@
 #   make deploy PORT=/dev/ttyACM0
 PORT ?= auto
 MPREMOTE := mpremote connect $(PORT)
+TILEGEN := uvx --from git+https://github.com/bengosney/tileset.git tileset
 
 SRC := $(wildcard src/*.py)
+ASSETS := $(sort $(wildcard assets/*) assets/tileset.16bpp)
 
 .PHONY: deploy run ls repl reset help
 
 ## Copy the project to the PicoSystem
-deploy:
-	$(MPREMOTE) fs cp $(SRC) :
+deploy: $(ASSETS)
+	$(MPREMOTE) fs cp $(SRC) $(ASSETS) :
 
 ## Run main.py from this machine without copying it
 run:
@@ -30,3 +32,13 @@ reset:
 ## Show this help
 help:
 	@awk '/^## / { desc = substr($$0, 4); next } /^[a-z-]+:/ && desc { sub(/:.*/, ""); printf "%-8s %s\n", $$0, desc } { desc = "" }' $(MAKEFILE_LIST)
+
+tileset/tileset.16bpp: tileset.toml
+	$(TILEGEN) generate
+
+assets/%: tileset/%
+	@mkdir -p $(@D)
+	cp $< $@
+
+clean:
+	rm -rf tileset
