@@ -1,5 +1,6 @@
 import math
 
+import adventurer
 import noise
 
 SCREEN_SIZE = 120
@@ -25,12 +26,14 @@ heights.append(heights[0])
 
 def load_tileset(name:str) -> Buffer:
     tileset = Buffer(128, 128)
-    with open("tileset.16bpp", "rb") as h:
+    with open(name, "rb") as h:
         h.readinto(tileset)
     return tileset
 
 level_tiles = load_tileset("tileset.16bpp")
 spritesheet(level_tiles)
+
+character_tiles = load_tileset("adventurer.16bpp")
 
 camera_x = 0
 
@@ -71,11 +74,19 @@ def draw(tick):
 
     offset_x = camera_x % SPRITE_SIZE
 
+    ## Level
+    spritesheet(level_tiles)
     for column in range(COLUMNS + 1):
         height_index = (column + (camera_x // SPRITE_SIZE)) % LEVEL_SIZE
         height = heights[height_index]
         x = column * SPRITE_SIZE - offset_x
         crop = max(0, -x)
         blit(column_strip, crop, 0, SPRITE_SIZE - crop, SCREEN_SIZE - height, x + crop, height)
+
+    ## Character
+    spritesheet(character_tiles)
+    frames = adventurer.ACTIONS["walk"]
+    frame = frames[tick // 8 % len(frames)]
+    sprite(frame, 10, 10, adventurer.CELLS_WIDE, adventurer.CELLS_HIGH)
 
 start()
