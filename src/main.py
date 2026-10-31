@@ -63,7 +63,7 @@ def update(tick):
     scroll_speed = 3
 
     if button(LEFT):
-        camera_x = max(0, camera_x - scroll_speed)
+        camera_x -= scroll_speed
     if button(RIGHT):
         camera_x += scroll_speed
 
