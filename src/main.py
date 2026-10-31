@@ -65,7 +65,7 @@ def update(tick):
         camera_x += scroll_speed
 
 def draw(tick):
-    pen(0, 0, 0)
+    pen(7, 10, 12)
     clear()
     pen(15, 15, 15)
 
