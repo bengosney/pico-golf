@@ -35,6 +35,16 @@ def tile(n, x, y):
     sprite(index, x, y, CELLS, CELLS)
 
 
+column_strip = Buffer(SPRITE_SIZE, SCREEN_SIZE)
+target(column_strip)
+clip()
+tile(1, 0, 0)
+for strip_y in range(SPRITE_SIZE, SCREEN_SIZE, SPRITE_SIZE):
+    tile(0, 0, strip_y)
+target()
+clip()
+
+
 def update(tick):
     global camera_x
 
@@ -53,9 +63,8 @@ def draw(tick):
     for column in range(COLUMNS + 1):
         height_index = (column + (camera_x // SPRITE_SIZE)) % COLUMNS
         height = heights[height_index]
-        tile(1, (column * SPRITE_SIZE) - offset_x, height)
-        x = column * SPRITE_SIZE
-        for y in range(height + SPRITE_SIZE, SCREEN_SIZE, SPRITE_SIZE):
-            tile(0, x - offset_x, y)
+        x = column * SPRITE_SIZE - offset_x
+        crop = max(0, -x)
+        blit(column_strip, crop, 0, SPRITE_SIZE - crop, SCREEN_SIZE - height, x + crop, height)
 
 start()

@@ -9,3 +9,4 @@ darker = "#2b1c13"
 top-light = "#7ec850"
 top-dark = "#4c9a32"
 sheet-format = ["png", "16bpp"]
+simple = true
