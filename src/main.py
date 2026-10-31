@@ -38,6 +38,10 @@ def ground_at(char_left):
     last = (char_left + adventurer.FRAME_WIDTH - CHAR_FOOT_INSET - 1) // SPRITE_SIZE
     return min(heights[column % LEVEL_SIZE] for column in range(first, last + 1))
 
+def is_on_ground(char_left) -> bool:
+    ground = ground_at(char_left)
+    feet = char_y + adventurer.FRAME_HEIGHT
+    return feet == ground
 
 def load_tileset(name:str) -> Buffer:
     tileset = Buffer(128, 128)
@@ -85,7 +89,7 @@ def update(tick):
     if button(RIGHT):
         new_x += CHAR_SPEED
 
-    if pressed(A):
+    if pressed(A) and is_on_ground(char_x):
         char_vertical_velocity += CHAR_JUMP
 
     feet = char_y + adventurer.FRAME_HEIGHT
