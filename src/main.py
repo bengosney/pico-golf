@@ -13,6 +13,9 @@ VERTICAL_OFFSET = (3 * SPRITE_SIZE)
 HILL_WIDTH = 1.0  # smaller makes broader hills
 HILL_HEIGHT = 20
 
+CHAR_SCREEN_CENTER = (SCREEN_SIZE // 2) - adventurer.FRAME_WIDTH
+CHAR_COLUMN = CHAR_SCREEN_CENTER // SPRITE_SIZE
+
 
 def circle_height(column, vertical_offset = VERTICAL_OFFSET):
     angle = 2 * math.pi * column / (LEVEL_SIZE - 1)
@@ -37,6 +40,8 @@ character_tiles = load_tileset("adventurer.16bpp")
 
 camera_x = 0
 
+char_y = adventurer.FRAME_HEIGHT
+
 def tile(n, x, y):
     per_row = 128 // SPRITE_SIZE
     index = (n % per_row) * CELLS + (n // per_row) * CELLS * 16
@@ -58,7 +63,7 @@ def create_strip() -> Buffer:
 column_strip = create_strip()
 
 def update(tick):
-    global camera_x
+    global camera_x, char_y
 
     scroll_speed = 3
 
@@ -66,6 +71,11 @@ def update(tick):
         camera_x -= scroll_speed
     if button(RIGHT):
         camera_x += scroll_speed
+
+    column = CHAR_COLUMN
+    height_index = (column + (camera_x // SPRITE_SIZE)) % LEVEL_SIZE
+    height = heights[height_index]
+    char_y = height - adventurer.FRAME_HEIGHT
 
 def draw(tick):
     pen(7, 10, 12)
@@ -87,6 +97,6 @@ def draw(tick):
     spritesheet(character_tiles)
     frames = adventurer.ACTIONS["walk"]
     frame = frames[tick // 8 % len(frames)]
-    sprite(frame, 10, 10, adventurer.CELLS_WIDE, adventurer.CELLS_HIGH)
+    sprite(frame, CHAR_SCREEN_CENTER, char_y, adventurer.CELLS_WIDE, adventurer.CELLS_HIGH)
 
 start()
