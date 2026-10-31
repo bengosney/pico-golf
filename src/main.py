@@ -13,11 +13,12 @@ VERTICAL_OFFSET = (3 * SPRITE_SIZE)
 HILL_WIDTH = 1.0  # smaller makes broader hills
 HILL_HEIGHT = 20
 
+GRAVITY = 1
 CHAR_SCREEN_CENTER = (SCREEN_SIZE // 2) - adventurer.FRAME_WIDTH
 CHAR_SPEED = 3
+CHAR_JUMP = -(GRAVITY * 5)
 CHAR_FOOT_INSET = 3  # the frame is wider than the character's feet
-MAX_STEP_UP = SPRITE_SIZE
-GRAVITY = 1
+MAX_STEP_UP = SPRITE_SIZE // 2
 
 
 def circle_height(column, vertical_offset = VERTICAL_OFFSET):
@@ -84,16 +85,17 @@ def update(tick):
     if button(RIGHT):
         new_x += CHAR_SPEED
 
+    if pressed(A):
+        char_vertical_velocity += CHAR_JUMP
+
     feet = char_y + adventurer.FRAME_HEIGHT
     if feet - ground_at(new_x) <= MAX_STEP_UP:
         char_x = new_x
 
     ground = ground_at(char_x)
-    if feet < ground:
-        feet = min(feet + char_vertical_velocity, ground)
-        char_vertical_velocity += GRAVITY
-    else:
-        feet = ground
+    feet = min(feet + char_vertical_velocity, ground)
+    char_vertical_velocity += GRAVITY
+
     if feet == ground:
         char_vertical_velocity = 0
     char_y = feet - adventurer.FRAME_HEIGHT
