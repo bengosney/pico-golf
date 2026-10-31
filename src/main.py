@@ -9,18 +9,18 @@ COLUMNS = SCREEN_SIZE // SPRITE_SIZE
 LEVEL_SIZE = COLUMNS * 10
 VERTICAL_OFFSET = (3 * SPRITE_SIZE)
 
-HILL_WIDTH = 0.10  # smaller makes broader hills
+HILL_WIDTH = 1.0  # smaller makes broader hills
 HILL_HEIGHT = 20
 
 
 def circle_height(column, vertical_offset = VERTICAL_OFFSET):
-    angle = 2 * math.pi * column / (COLUMNS - 1)
+    angle = 2 * math.pi * column / (LEVEL_SIZE - 1)
     value = noise.noise2(HILL_WIDTH * math.cos(angle), HILL_WIDTH * math.sin(angle))
     return (int(60 + value * HILL_HEIGHT) // SPRITE_SIZE * SPRITE_SIZE) + vertical_offset 
 
 
 noise.seed(42)
-heights = [circle_height(column) for column in range(LEVEL_SIZE)]
+heights = [circle_height(column) for column in range(LEVEL_SIZE - 1)]
 heights.append(heights[0])
 
 def load_tileset(name:str) -> Buffer:
@@ -57,10 +57,12 @@ column_strip = create_strip()
 def update(tick):
     global camera_x
 
+    scroll_speed = 3
+
     if button(LEFT):
-        camera_x = max(0, camera_x - 1)
+        camera_x = max(0, camera_x - scroll_speed)
     if button(RIGHT):
-        camera_x += 1
+        camera_x += scroll_speed
 
 def draw(tick):
     pen(0, 0, 0)
@@ -70,7 +72,7 @@ def draw(tick):
     offset_x = camera_x % SPRITE_SIZE
 
     for column in range(COLUMNS + 1):
-        height_index = (column + (camera_x // SPRITE_SIZE)) % COLUMNS
+        height_index = (column + (camera_x // SPRITE_SIZE)) % LEVEL_SIZE
         height = heights[height_index]
         x = column * SPRITE_SIZE - offset_x
         crop = max(0, -x)
