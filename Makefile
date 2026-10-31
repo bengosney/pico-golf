@@ -6,16 +6,26 @@ TILEGEN := uvx --from git+https://github.com/bengosney/tileset.git tileset
 
 SRC := $(wildcard src/*.py)
 ASSETS := $(sort $(wildcard assets/*) assets/tileset.16bpp)
+DEPLOY_LOG := deploy.log
 
-.PHONY: deploy run ls repl reset help
+.PHONY: deploy redeploy run ls repl reset help
 
-## Copy the project to the PicoSystem
-deploy: $(ASSETS)
-	$(MPREMOTE) fs cp $(SRC) $(ASSETS) :
+## Copy files changed since the last deploy to the PicoSystem
+deploy: $(DEPLOY_LOG)
 
-## Copy the modules to the PicoSystem and run main.py without copying it
-run:
-	$(MPREMOTE) fs cp $(filter-out src/main.py,$(SRC)) : + run src/main.py
+## Copy the whole project, for a new or wiped PicoSystem
+redeploy:
+	rm -f $(DEPLOY_LOG)
+	$(MAKE) deploy
+
+# The log's modified time is how make knows which files have changed
+$(DEPLOY_LOG): $(SRC) $(ASSETS)
+	$(MPREMOTE) fs cp $? :
+	@for file in $?; do echo "$$(date '+%F %T') $$file" >> $@; done
+
+## Deploy changed files and run main.py
+run: deploy
+	$(MPREMOTE) run src/main.py
 
 ## List files on the PicoSystem
 ls:
