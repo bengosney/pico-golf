@@ -14,7 +14,10 @@ HILL_WIDTH = 1.0  # smaller makes broader hills
 HILL_HEIGHT = 20
 
 CHAR_SCREEN_CENTER = (SCREEN_SIZE // 2) - adventurer.FRAME_WIDTH
-CHAR_COLUMN = CHAR_SCREEN_CENTER // SPRITE_SIZE
+CHAR_SPEED = 3
+CHAR_FOOT_INSET = 3  # the frame is wider than the character's feet
+MAX_STEP_UP = SPRITE_SIZE
+GRAVITY = 1
 
 
 def circle_height(column, vertical_offset = VERTICAL_OFFSET):
@@ -27,6 +30,14 @@ noise.seed(42)
 heights = [circle_height(column) for column in range(LEVEL_SIZE - 1)]
 heights.append(heights[0])
 
+
+def ground_at(char_left):
+    """Return the highest ground under the feet of a character at this x."""
+    first = (char_left + CHAR_FOOT_INSET) // SPRITE_SIZE
+    last = (char_left + adventurer.FRAME_WIDTH - CHAR_FOOT_INSET - 1) // SPRITE_SIZE
+    return min(heights[column % LEVEL_SIZE] for column in range(first, last + 1))
+
+
 def load_tileset(name:str) -> Buffer:
     tileset = Buffer(128, 128)
     with open(name, "rb") as h:
@@ -38,9 +49,11 @@ spritesheet(level_tiles)
 
 character_tiles = load_tileset("adventurer.16bpp")
 
+char_x = CHAR_SCREEN_CENTER
+char_y = ground_at(char_x) - adventurer.FRAME_HEIGHT
+char_vertical_velocity = 0
 camera_x = 0
 
-char_y = adventurer.FRAME_HEIGHT
 
 def tile(n, x, y):
     per_row = 128 // SPRITE_SIZE
@@ -63,19 +76,30 @@ def create_strip() -> Buffer:
 column_strip = create_strip()
 
 def update(tick):
-    global camera_x, char_y
+    global camera_x, char_x, char_y, char_vertical_velocity
 
-    scroll_speed = 3
-
+    new_x = char_x
     if button(LEFT):
-        camera_x -= scroll_speed
+        new_x -= CHAR_SPEED
     if button(RIGHT):
-        camera_x += scroll_speed
+        new_x += CHAR_SPEED
 
-    column = CHAR_COLUMN
-    height_index = (column + (camera_x // SPRITE_SIZE)) % LEVEL_SIZE
-    height = heights[height_index]
-    char_y = height - adventurer.FRAME_HEIGHT
+    feet = char_y + adventurer.FRAME_HEIGHT
+    if feet - ground_at(new_x) <= MAX_STEP_UP:
+        char_x = new_x
+
+    ground = ground_at(char_x)
+    if feet < ground:
+        feet = min(feet + char_vertical_velocity, ground)
+        char_vertical_velocity += GRAVITY
+    else:
+        feet = ground
+    if feet == ground:
+        char_vertical_velocity = 0
+    char_y = feet - adventurer.FRAME_HEIGHT
+
+    camera_x = char_x - CHAR_SCREEN_CENTER
+
 
 def draw(tick):
     pen(7, 10, 12)
