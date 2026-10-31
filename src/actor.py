@@ -27,6 +27,7 @@ class Actor:
         self.art = art
         self.sheet = load_sheet(art.SHEET, art.SHEET_WIDTH, art.SHEET_HEIGHT)
         self.action = action
+        self.blit_flags = 0
         self.foot_inset = foot_inset  # for frames wider than the character's feet
         self.foot_width = art.FRAME_WIDTH - 2 * foot_inset
         self.x = x
@@ -46,6 +47,21 @@ class Actor:
         feet = self.y + self.art.FRAME_HEIGHT
         if feet - ground_at(new_x + self.foot_inset, self.foot_width) <= MAX_STEP_UP:
             self.x = new_x
+
+        if distance > 0:
+            self.blit_flags |= HFLIP
+        if distance < 0:
+            self.blit_flags &= ~HFLIP
+
+        if self.is_on_ground():
+            if distance == 0:
+                self.action = "idle"
+            else:
+                self.action = "walk"
+
+        if self.vertical_velocity < 0:
+            self.action = "jump"
+
 
     def update(self):
         ground = ground_at(self.x + self.foot_inset, self.foot_width)
@@ -70,15 +86,20 @@ class Actor:
         sheet_x = frame % per_row * 8
         sheet_y = frame // per_row * 8
 
-        # blit draws too much when it clips the left or top edge, so crop here
-        crop_x = max(0, -x)
-        crop_y = max(0, -self.y)
+        crop_left = max(0, -x)
+        crop_right = max(0, x + art.FRAME_WIDTH - SCREEN_SIZE)
+        crop_top = max(0, -self.y)
+        width = art.FRAME_WIDTH - crop_left - crop_right
+        height = art.FRAME_HEIGHT - crop_top
         blit(
             self.sheet,
-            sheet_x + crop_x,
-            sheet_y + crop_y,
-            art.FRAME_WIDTH - crop_x,
-            art.FRAME_HEIGHT - crop_y,
-            x + crop_x,
-            self.y + crop_y,
+            sheet_x + (crop_right if self.blit_flags else crop_left),
+            sheet_y + crop_top,
+            width,
+            height,
+            x + crop_left,
+            self.y + crop_top,
+            width,
+            height,
+            self.blit_flags,
         )

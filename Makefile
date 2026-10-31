@@ -13,9 +13,9 @@ ASSETS := $(sort $(wildcard assets/*) assets/tileset.16bpp)
 deploy: $(ASSETS)
 	$(MPREMOTE) fs cp $(SRC) $(ASSETS) :
 
-## Run main.py from this machine without copying it
+## Copy the modules to the PicoSystem and run main.py without copying it
 run:
-	$(MPREMOTE) run src/main.py
+	$(MPREMOTE) fs cp $(filter-out src/main.py,$(SRC)) : + run src/main.py
 
 ## List files on the PicoSystem
 ls:

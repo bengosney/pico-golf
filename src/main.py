@@ -50,6 +50,8 @@ def update(tick):
     if pressed(A):
         player.jump(CHAR_JUMP)
     player.move(distance)
+    if distance:
+        player.blit_flags = distance < 0
 
     for actor in actors:
         actor.update()
