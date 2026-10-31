@@ -33,14 +33,14 @@ class Actor:
         self.x = x
         self.y = ground_at(x + foot_inset, self.foot_width) - art.FRAME_HEIGHT
         self.vertical_velocity = 0
+        self.last_on_ground = 0
 
     def is_on_ground(self) -> bool:
-        ground = ground_at(self.x + self.foot_inset, self.foot_width)
-        return self.y + self.art.FRAME_HEIGHT == ground
+        return self.last_on_ground == 0
 
     def jump(self, velocity):
-        if self.is_on_ground():
-            self.vertical_velocity += velocity
+        if self.last_on_ground < 5 and self.vertical_velocity >= 0:
+            self.vertical_velocity = velocity
 
     def move(self, distance):
         new_x = self.x + distance
@@ -70,6 +70,10 @@ class Actor:
 
         if feet == ground:
             self.vertical_velocity = 0
+            self.last_on_ground = 0
+        else:
+            self.last_on_ground += 1
+
         self.y = feet - self.art.FRAME_HEIGHT
 
     def draw(self, tick, camera_x):
