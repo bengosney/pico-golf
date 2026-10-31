@@ -7,24 +7,29 @@ SPRITE_SIZE = 8
 CELLS = SPRITE_SIZE // 8  # sprite() counts in 8x8 cells
 COLUMNS = SCREEN_SIZE // SPRITE_SIZE
 LEVEL_SIZE = COLUMNS * 10
+VERTICAL_OFFSET = (3 * SPRITE_SIZE)
 
-HILL_WIDTH = 0.25  # smaller makes broader hills
-HILL_HEIGHT = 25
+HILL_WIDTH = 0.10  # smaller makes broader hills
+HILL_HEIGHT = 20
 
 
-def circle_height(column):
+def circle_height(column, vertical_offset = VERTICAL_OFFSET):
     angle = 2 * math.pi * column / (COLUMNS - 1)
     value = noise.noise2(HILL_WIDTH * math.cos(angle), HILL_WIDTH * math.sin(angle))
-    return int(60 + value * HILL_HEIGHT) // SPRITE_SIZE * SPRITE_SIZE
+    return (int(60 + value * HILL_HEIGHT) // SPRITE_SIZE * SPRITE_SIZE) + vertical_offset 
 
 
 noise.seed(42)
 heights = [circle_height(column) for column in range(LEVEL_SIZE)]
 heights.append(heights[0])
 
-level_tiles = Buffer(128, 128)
-with open("tileset.16bpp", "rb") as h:
-    h.readinto(level_tiles)
+def load_tileset(name:str) -> Buffer:
+    tileset = Buffer(128, 128)
+    with open("tileset.16bpp", "rb") as h:
+        h.readinto(tileset)
+    return tileset
+
+level_tiles = load_tileset("tileset.16bpp")
 spritesheet(level_tiles)
 
 camera_x = 0
@@ -35,15 +40,19 @@ def tile(n, x, y):
     sprite(index, x, y, CELLS, CELLS)
 
 
-column_strip = Buffer(SPRITE_SIZE, SCREEN_SIZE)
-target(column_strip)
-clip()
-tile(1, 0, 0)
-for strip_y in range(SPRITE_SIZE, SCREEN_SIZE, SPRITE_SIZE):
-    tile(0, 0, strip_y)
-target()
-clip()
+def create_strip() -> Buffer:
+    column_strip = Buffer(SPRITE_SIZE, SCREEN_SIZE)
+    target(column_strip)
+    clip()
+    tile(1, 0, 0)
+    for strip_y in range(SPRITE_SIZE, SCREEN_SIZE, SPRITE_SIZE):
+        tile(0, 0, strip_y)
+    target()
+    clip()
 
+    return column_strip
+
+column_strip = create_strip()
 
 def update(tick):
     global camera_x
