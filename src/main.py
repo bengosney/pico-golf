@@ -2,6 +2,7 @@ import math
 
 import adventurer
 import noise
+from debug import debug, render_debug
 
 SCREEN_SIZE = 120
 SPRITE_SIZE = 8
@@ -19,12 +20,6 @@ CHAR_SPEED = 3
 CHAR_JUMP = -(GRAVITY * 5)
 CHAR_FOOT_INSET = 3  # the frame is wider than the character's feet
 MAX_STEP_UP = SPRITE_SIZE // 2
-
-debug_text: list[str] = []
-def debug(*args, **kw_args) -> None:
-    parts = [str(a) for a in args]
-    parts += [f"{k}: {v}" for k,v in kw_args.items()]
-    debug_text.append(", ".join(parts))
 
 def circle_height(column, vertical_offset = VERTICAL_OFFSET):
     angle = 2 * math.pi * column / (LEVEL_SIZE - 1)
@@ -134,9 +129,6 @@ def draw(tick):
     frame = frames[tick // 8 % len(frames)]
     sprite(frame, CHAR_SCREEN_CENTER, char_y, adventurer.CELLS_WIDE, adventurer.CELLS_HIGH)
 
-    cursor()
-    for debug_line in debug_text:
-        text(debug_line)
-    debug_text.clear()
+    render_debug()
 
 start()
