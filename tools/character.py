@@ -53,6 +53,13 @@ def encode_pixel(red: int, green: int, blue: int, alpha: int) -> int:
     return (green >> 4) << 12 | (blue >> 4) << 8 | 0xF << 4 | red >> 4
 
 
+def write_pixels(path: Path, sheet: Image.Image) -> None:
+    data = sheet.tobytes()
+    pixels = [encode_pixel(*data[i : i + 4]) for i in range(0, len(data), 4)]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(struct.pack(f"<{len(pixels)}H", *pixels))
+
+
 def write_sheet(path: Path, frames: list[Image.Image], width: int, height: int) -> int:
     columns = SHEET_WIDTH // width
     rows = -(-len(frames) // columns)
@@ -60,10 +67,7 @@ def write_sheet(path: Path, frames: list[Image.Image], width: int, height: int) 
     for number, frame in enumerate(frames):
         sheet.paste(frame, (number % columns * width, number // columns * height))
 
-    data = sheet.tobytes()
-    pixels = [encode_pixel(*data[i : i + 4]) for i in range(0, len(data), 4)]
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(struct.pack(f"<{len(pixels)}H", *pixels))
+    write_pixels(path, sheet)
     return sheet.height
 
 
