@@ -1,5 +1,6 @@
 import adventurer
 from actor import GRAVITY, load_sheet
+from ball import Ball
 from debug import render_debug
 from level import COLUMNS, LEVEL_SIZE, SCREEN_SIZE, SPRITE_SIZE, heights
 from player import Player
@@ -15,7 +16,8 @@ level_tiles = load_sheet("tileset.16bpp")
 spritesheet(level_tiles)
 
 player = Player(adventurer, CHAR_SCREEN_CENTER, action="walk", foot_inset=CHAR_FOOT_INSET)
-actors = [player]
+ball = Ball(CHAR_SCREEN_CENTER + 10)
+actors = [player, ball]
 camera_x = 0
 
 
