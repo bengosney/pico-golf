@@ -1,7 +1,8 @@
 import adventurer
-from actor import GRAVITY, Actor, load_sheet
-from debug import debug, render_debug
+from actor import GRAVITY, load_sheet
+from debug import render_debug
 from level import COLUMNS, LEVEL_SIZE, SCREEN_SIZE, SPRITE_SIZE, heights
+from player import Player
 
 CELLS = SPRITE_SIZE // 8  # sprite() counts in 8x8 cells
 
@@ -13,7 +14,7 @@ CHAR_FOOT_INSET = 3  # the frame is wider than the character's feet
 level_tiles = load_sheet("tileset.16bpp")
 spritesheet(level_tiles)
 
-player = Actor(adventurer, CHAR_SCREEN_CENTER, action="walk", foot_inset=CHAR_FOOT_INSET)
+player = Player(adventurer, CHAR_SCREEN_CENTER, action="walk", foot_inset=CHAR_FOOT_INSET)
 actors = [player]
 camera_x = 0
 
