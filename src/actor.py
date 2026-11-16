@@ -22,12 +22,12 @@ class Actor:
     for scenery that stays where it was put.
     """
 
-    def __init__(self, art, x):
+    def __init__(self, art, x, y=None):
         self.art = art
         self.sheet = load_sheet(art.SHEET, art.SHEET_WIDTH, art.SHEET_HEIGHT)
         self.blit_flags = 0
         self.x = x
-        self.y = self.ground_under(x) - art.FRAME_HEIGHT
+        self.y = y or self.ground_under(x) - art.FRAME_HEIGHT
         self.vertical_velocity = 0
         self.last_on_ground = 0
 
