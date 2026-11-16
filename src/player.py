@@ -20,8 +20,8 @@ class Player(Actor):
         return self.art.ACTIONS[self.action]
 
     def jump(self, velocity):
-        if self.last_on_ground < 5 and self.vertical_velocity >= 0:
-            self.vertical_velocity = velocity
+        if self.last_on_ground < 5 and self.vy >= 0:
+            self.vy = velocity
 
     def move(self, distance):
         new_x = self.x + distance
@@ -40,5 +40,5 @@ class Player(Actor):
             else:
                 self.action = "walk"
 
-        if self.vertical_velocity < 0:
+        if self.vy < 0:
             self.action = "jump"

@@ -28,7 +28,8 @@ class Actor:
         self.blit_flags = 0
         self.x = x
         self.y = y or self.ground_under(x) - art.FRAME_HEIGHT
-        self.vertical_velocity = 0
+        self.vx = 0
+        self.vy = 0
         self.last_on_ground = 0
 
     def ground_under(self, x):
@@ -41,12 +42,13 @@ class Actor:
         return self.last_on_ground == 0
 
     def update(self):
+        self.x += self.vx
         ground = self.ground_under(self.x)
-        feet = min(self.y + self.art.FRAME_HEIGHT + self.vertical_velocity, ground)
-        self.vertical_velocity += GRAVITY
+        feet = min(self.y + self.art.FRAME_HEIGHT + self.vy, ground)
+        self.vy += GRAVITY
 
         if feet == ground:
-            self.vertical_velocity = 0
+            self.vy = 0
             self.last_on_ground = 0
         else:
             self.last_on_ground += 1
