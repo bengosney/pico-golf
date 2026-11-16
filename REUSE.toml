@@ -1,0 +1,13 @@
+version = 1
+
+[[annotations]]
+path = "**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Ben Gosney"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+[[annotations]]
+path = ["assets/adventurer.16bpp", "assets/equipment.16bpp", "raw_assets/adventurer/**", "raw_assets/equipment/**"]
+precedence = "override"
+SPDX-FileCopyrightText = "Kenney (https://kenney.nl)"
+SPDX-License-Identifier = "CC0-1.0"

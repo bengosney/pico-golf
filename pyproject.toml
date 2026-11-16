@@ -1,6 +1,8 @@
 [project]
 name = "pico-golf"
 version = "0.1.0"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE", "CREDITS.md"]
 
 [tool.ruff.lint]
 # PicoSystem's API is global on the device. ty checks these names against
