@@ -26,6 +26,6 @@ heights.append(heights[0])
 
 def ground_at(x, width):
     """Return the highest ground under a span of pixels starting at this x."""
-    first = x // SPRITE_SIZE
-    last = (x + width - 1) // SPRITE_SIZE
+    first = int(x // SPRITE_SIZE)
+    last = int((x + width - 1) // SPRITE_SIZE)
     return min(heights[column % LEVEL_SIZE] for column in range(first, last + 1))

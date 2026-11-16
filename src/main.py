@@ -59,7 +59,7 @@ def update(tick):
     for actor in actors:
         actor.update()
 
-    camera_x = player.x - CHAR_SCREEN_CENTER
+    camera_x = round(player.x) - CHAR_SCREEN_CENTER
 
 
 def draw(tick):

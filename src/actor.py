@@ -26,8 +26,8 @@ class Actor:
         self.art = art
         self.sheet = load_sheet(art.SHEET, art.SHEET_WIDTH, art.SHEET_HEIGHT)
         self.blit_flags = 0
-        self.x = x
-        self.y = y or self.ground_under(x) - art.FRAME_HEIGHT
+        self.x = float(x)
+        self.y = float(y or self.ground_under(x) - art.FRAME_HEIGHT)
         self.vx = 0
         self.vy = 0
         self.last_on_ground = 0
@@ -57,7 +57,8 @@ class Actor:
 
     def draw(self, tick, camera_x):
         art = self.art
-        x = (self.x - camera_x) % LEVEL_WIDTH
+        x = (round(self.x) - camera_x) % LEVEL_WIDTH
+        y = round(self.y)
         if x > LEVEL_WIDTH - art.FRAME_WIDTH:
             x -= LEVEL_WIDTH
         if x >= SCREEN_SIZE:
@@ -71,7 +72,7 @@ class Actor:
 
         crop_left = max(0, -x)
         crop_right = max(0, x + art.FRAME_WIDTH - SCREEN_SIZE)
-        crop_top = max(0, -self.y)
+        crop_top = max(0, -y)
         width = art.FRAME_WIDTH - crop_left - crop_right
         height = art.FRAME_HEIGHT - crop_top
         blit(
@@ -81,7 +82,7 @@ class Actor:
             width,
             height,
             x + crop_left,
-            self.y + crop_top,
+            y + crop_top,
             width,
             height,
             self.blit_flags,
