@@ -1,6 +1,7 @@
-from level import LEVEL_WIDTH, SCREEN_SIZE, ground_at
+from level import LEVEL_WIDTH, SCREEN_SIZE, SPRITE_SIZE, ground_at
 
 GRAVITY = 1
+MAX_STEP_UP = SPRITE_SIZE // 2
 TICKS_PER_FRAME = 8
 
 sheets = {}
@@ -31,6 +32,8 @@ class Actor:
         self.vx = 0
         self.vy = 0
         self.last_on_ground = 0
+        self.bounce = 1
+        self.friction = 0
 
     def ground_under(self, x):
         return ground_at(x, self.art.FRAME_WIDTH)
@@ -41,8 +44,26 @@ class Actor:
     def is_on_ground(self) -> bool:
         return self.last_on_ground == 0
 
+    def step(self, distance) -> bool:
+        """Move sideways unless the ground ahead is too high to step up onto."""
+        new_x = self.x + distance
+        feet = self.y + self.art.FRAME_HEIGHT
+        if feet - self.ground_under(new_x) > MAX_STEP_UP:
+            return False
+        self.x = new_x
+        return True
+
     def update(self):
-        self.x += self.vx
+        if not self.step(self.vx):
+            self.vx = -self.vx * self.bounce
+
+        if self.is_on_ground() and self.vx:
+            slow = min(self.friction, self.vx)
+            self.vx -= slow if self.vx > 0 else -slow
+
+        if abs(self.vx) < 0.1:
+            self.vx = 0
+
         ground = self.ground_under(self.x)
         feet = min(self.y + self.art.FRAME_HEIGHT + self.vy, ground)
         self.vy += GRAVITY

@@ -1,7 +1,5 @@
 from actor import Actor
-from level import SPRITE_SIZE, ground_at
-
-MAX_STEP_UP = SPRITE_SIZE // 2
+from level import ground_at
 
 
 class Player(Actor):
@@ -24,10 +22,7 @@ class Player(Actor):
             self.vy = velocity
 
     def move(self, distance):
-        new_x = self.x + distance
-        feet = self.y + self.art.FRAME_HEIGHT
-        if feet - self.ground_under(new_x) <= MAX_STEP_UP:
-            self.x = new_x
+        self.step(distance)
 
         if distance > 0:
             self.blit_flags |= HFLIP
